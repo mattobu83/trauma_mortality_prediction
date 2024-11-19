@@ -2,8 +2,9 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+
 # Show the page title and description.
-st.set_page_config(page_title="Trauma Mortality Prediction Calculator", page_icon="🏥")
+st.set_page_config(page_title="Trauma Mortality Prediction Calculator", page_icon="🏥", initial_sidebar_state='collapsed')
 st.title("🏥 Trauma Mortality Prediction Calculator")
 st.write(
     """
@@ -12,6 +13,7 @@ st.write(
     """
 )
 
+st.markdown("# Patient Demographics")
 
 # Load the data from a CSV. We're caching this so it doesn't reload every time the app
 # reruns (e.g. if the user interacts with the widgets).
@@ -48,7 +50,7 @@ st.dataframe(
 # Convert to long format for Altair
 df_long = df_reshaped.melt(id_vars='CombinedRace', value_vars=['MaleCount', 'FemaleCount','NonBinaryCount'], 
                   var_name='Gender', value_name='Count')
-print(df_long)
+#print(df_long)
 # Create the stacked bar chart
 chart = alt.Chart(df_long).mark_bar().encode(
     y=alt.Y('CombinedRace:N', title='Race'),
