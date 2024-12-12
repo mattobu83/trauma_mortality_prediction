@@ -47,11 +47,17 @@ with top_col1:
     # Core Demographics
     age_input = st.slider("Patient Age", 0, 150, 50)
     race_input = st.selectbox("Patient Race", options=["White", "Black", "Hispanic", "Asian", "Other"])
-    gender_input = st.selectbox("Patient Gender", ["Male", "Female", "Trans"])
+    gender_input = st.selectbox("Patient Gender", ["Male", "Female", "NA"])
     transport_method = st.selectbox("Transport Method", ["Ambulance", "Heliambulance", "Self Car"])
-    
+    trauma_type = st.selectbox("Trauma Type",['Blunt', 'Burn', 'Penetrating', 
+                                        'Storm Related','neglect or abuse', 'terrorism'])
+    iss = st.slider("Injury Severity", 0, 150, 50)
+    heart_attack = st.checkbox("Heart Attack Prior to arrival?")
+    suppo2 = st.checkbox("Patient Given Supplementary O2")
     # Additional Vital Parameters
-    gcs_input = st.slider("Glasgow Coma Scale (GCS)", 3, 15, 14)  
+    gcs_motor = st.slider("Glasgow Coma Scale (GCS) - Motor", 1, 6, 6)
+    gcs_verbal = st.slider("Glasgow Coma Scale (GCS) - Verbal", 1, 5, 5)  
+    gcs_eye = st.slider("Glasgow Coma Scale (GCS) - Eye", 1, 4, 4) 
     resp_rate = st.slider("Respiratory Rate (breaths/min)", 0, 60, 20)
     blood_pressure_systolic = st.slider("Systolic Blood Pressure (mmHg)", 50, 250, 120)
     heart_rate = st.slider("Heart Rate (bpm)", 0, 200, 80)
@@ -63,40 +69,31 @@ with top_col1:
 with top_col2:
     # Convert categorical inputs to numeric codes (simulate model input)
     race_mapping = {race: idx for idx, race in enumerate(["White", "Black", "Hispanic", "Asian", "Other"])}
-    gender_mapping = {"Male": 0, "Female": 1, "Trans": 2}
+    gender_mapping = {"Male": 1, "Female": 2, "NA": 3}
     transport_mapping = {"Ambulance": 0, "Heliambulance": 1, "Self Car": 2}
-
-    # Example feature vector
-    features = [
-        age_input,
-        race_mapping[race_input],
-        gender_mapping[gender_input],
-        transport_mapping[transport_method],
-        gcs_input,
-        resp_rate,
-        blood_pressure_systolic,
-        heart_rate
-    ]
-
+    trauma_mapping = {injury: index for index, injury in enumerate(['Blunt', 'Burn', 'Penetrating', 
+                                        'Storm Related','neglect or abuse', 'terrorism'])}
+    heart_attack_mapping = 2 if ~heart_attack else 1
+    suppo2_mapping = 2 if suppo2 else 1
     model, feature_columns = load_model_and_features(model_path)
-
+    
     # Example user input based on the feature columns
-    user_input = {'GCSMOTOR': 6,
-                'GCSVERBAL': 6,
-                'GCSEYE':6,
-                'PREHOSPITALCARDIACARREST':2,
-                'AgeYears':50,
-                'SEX':1,
-                'TRAUMATYPE':1,
-                'SUPPLEMENTALOXYGEN':1,
+    user_input = {'GCSMOTOR': gcs_motor,
+                'GCSVERBAL': gcs_verbal,
+                'GCSEYE':gcs_eye,
+                'PREHOSPITALCARDIACARREST': heart_attack_mapping,
+                'AgeYears':age_input,
+                'SEX':gender_mapping[gender_input],
+                'TRAUMATYPE': trauma_mapping[trauma_type],
+                'SUPPLEMENTALOXYGEN':suppo2_mapping,
                 'VTEPROPHYLAXISTYPE':11,
-                "ISS":100,
+                "ISS":iss,
                 "MECHANISM":1, 
-                "SBP":120,
+                "SBP":blood_pressure_systolic,
                 "PULSEOXIMETRY":100 }
     # Run prediction
     prediction_proba = predict_percentage(user_input, model, feature_columns)
-    st.write(prediction_proba)
+    
     # Advanced placeholder: a pseudo "trauma scoring" that reduces the random variance by factoring in vitals
     # For demonstration, let's say we weigh GCS and blood pressure for mortality risk:
     #base_risk = random.uniform(0.1, 0.9)
@@ -107,12 +104,12 @@ with top_col2:
 
 
     #prediction_proba = min(max(final_risk, 0), 1)  # Ensure within [0,1]
-
+    mortality_risk = (prediction_proba) * 100
     # Display prediction result
     st.markdown(
         f"""
         <div style="text-align: center; font-size: 40px; color: red; font-weight: bold;">
-            Mortality Risk: {prediction_proba:.2f}%
+            Mortality Risk: {mortality_risk:.2f}%
         </div>
         """,
         unsafe_allow_html=True,
@@ -138,7 +135,9 @@ with bottom_col1:
         f"**Race**: {race_input}\n\n"
         f"**Gender**: {gender_input}\n\n"
         f"**Transport Method**: {transport_method}\n\n"
-        f"**GCS**: {gcs_input}\n\n"
+        f"**GCS - Motor**: {gcs_motor}\n\n"
+        f"**GCS- Verbal**: {gcs_verbal}\n\n"
+        f"**GCS - Eye**: {gcs_eye}\n\n"
         f"**Respiratory Rate**: {resp_rate} breaths/min\n\n"
         f"**Systolic Blood Pressure**: {blood_pressure_systolic} mmHg\n\n"
         f"**Heart Rate**: {heart_rate} bpm\n\n"
@@ -158,7 +157,9 @@ with bottom_col2:
             - Gender: {gender_input}
             - Race: {race_input}
             - Transport Method: {transport_method}
-            - GCS: {gcs_input}
+            - GCS - Motor: {gcs_motor}
+            - GCS - Eye: {gcs_eye}
+            - GCS - Verbal: {gcs_verbal}
             - Respiratory Rate: {resp_rate}
             - Systolic Blood Pressure: {blood_pressure_systolic}
             - Heart Rate: {heart_rate}
