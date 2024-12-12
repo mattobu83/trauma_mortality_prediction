@@ -15,5 +15,5 @@ A simple Streamlit app to predict patient mortality using a model trained on pub
 2. Run the app
 
    ```
-   $ streamlit run Main_Page.py
+   $ streamlit run Saviour.py
    ```
