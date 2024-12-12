@@ -8,7 +8,7 @@ from prediction_maker import *
 import pickle
 import xgboost as xgb
 
-model_path = "/workspaces/trauma_mortality_prediction/xgboost_patient_death_predictor_percentage_reduced.pkl"
+model_path = "xgboost_patient_death_predictor_percentage_reduced.pkl"
 # Set up the Streamlit page with favicon
 st.set_page_config(
     page_title="Trauma Prediction App",
