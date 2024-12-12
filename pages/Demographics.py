@@ -4,12 +4,14 @@ import streamlit as st
 
 
 # Show the page title and description.
-st.set_page_config(page_title="Trauma Mortality Prediction Calculator", page_icon="🏥", initial_sidebar_state='collapsed')
-st.title("🏥 Trauma Mortality Prediction Calculator")
+st.set_page_config(page_title="Saviour - Patient Demographics", page_icon="🏥", initial_sidebar_state='collapsed')
+st.title("🏥 Saviour - Patient Demographics")
 st.write(
     """
     This app visualizes trauma hospital stay data from Trinetx.
     Mortality prediction can be done using selected patient attributes.
+    Below are some summary stats of the patient population, 
+    grouped by race to ensure patient privacy.
     """
 )
 

@@ -2,10 +2,13 @@ import streamlit as st
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
-from transformers import AutoModelForCausalLM, AutoTokenizer
 import os
 from openai import OpenAI
+from prediction_maker import *
+import pickle
+import xgboost as xgb
 
+model_path = "/workspaces/trauma_mortality_prediction/xgboost_patient_death_predictor_percentage_reduced.pkl"
 # Set up the Streamlit page with favicon
 st.set_page_config(
     page_title="Trauma Prediction App",
@@ -14,13 +17,13 @@ st.set_page_config(
 )
 
 # Title and Description
-st.title("🏥 SAVIOUR: Beyond-Human Trauma Insight")
+st.title("🏥 SAVIOR: Beyond-Human Trauma Insight")
 st.write(
     """
     This advanced tool not only predicts trauma mortality risk but also provides 
     extraordinarily sophisticated intervention recommendations that push beyond conventional human reasoning. 
     Utilizing cutting-edge large language models and integrated medical scoring, 
-    **SAVIOUR** aims to guide life-saving decisions.
+    **SAVIOR** aims to guide life-saving decisions.
     """
 )
 
@@ -75,21 +78,41 @@ with top_col2:
         heart_rate
     ]
 
+    model, feature_columns = load_model_and_features(model_path)
+
+    # Example user input based on the feature columns
+    user_input = {'GCSMOTOR': 6,
+                'GCSVERBAL': 6,
+                'GCSEYE':6,
+                'PREHOSPITALCARDIACARREST':2,
+                'AgeYears':50,
+                'SEX':1,
+                'TRAUMATYPE':1,
+                'SUPPLEMENTALOXYGEN':1,
+                'VTEPROPHYLAXISTYPE':11,
+                "ISS":100,
+                "MECHANISM":1, 
+                "SBP":120,
+                "PULSEOXIMETRY":100 }
+    # Run prediction
+    prediction_proba = predict_percentage(user_input, model, feature_columns)
+    st.write(prediction_proba)
     # Advanced placeholder: a pseudo "trauma scoring" that reduces the random variance by factoring in vitals
     # For demonstration, let's say we weigh GCS and blood pressure for mortality risk:
-    base_risk = random.uniform(0.1, 0.9)
+    #base_risk = random.uniform(0.1, 0.9)
     # Adjust the base risk considering vital signs (lower GCS or very low BP → higher risk)
-    gcs_factor = (15 - gcs_input) / 15  # scaled from 0 (perfect) to ~0.8 (worst)
-    bp_factor = 1 if blood_pressure_systolic < 90 else 0.5 if blood_pressure_systolic < 120 else 0.3
-    final_risk = (base_risk + gcs_factor * 0.4 + bp_factor * 0.2) / 1.6  # Normalized
+    #gcs_factor = (15 - gcs_input) / 15  # scaled from 0 (perfect) to ~0.8 (worst)
+    #bp_factor = 1 if blood_pressure_systolic < 90 else 0.5 if blood_pressure_systolic < 120 else 0.3
+    #final_risk = (base_risk + gcs_factor * 0.4 + bp_factor * 0.2) / 1.6  # Normalized
 
-    prediction_proba = min(max(final_risk, 0), 1)  # Ensure within [0,1]
+
+    #prediction_proba = min(max(final_risk, 0), 1)  # Ensure within [0,1]
 
     # Display prediction result
     st.markdown(
         f"""
         <div style="text-align: center; font-size: 40px; color: red; font-weight: bold;">
-            Mortality Risk: {prediction_proba * 100:.2f}%
+            Mortality Risk: {prediction_proba:.2f}%
         </div>
         """,
         unsafe_allow_html=True,
