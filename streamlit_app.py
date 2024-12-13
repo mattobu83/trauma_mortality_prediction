@@ -47,7 +47,7 @@ with top_col1:
     # Core Demographics
     age_input = st.slider("Patient Age", 0, 120, 50)
     race_input = st.selectbox("Patient Race", options=["White", "Black", "Hispanic", "Asian", "Other"])
-    gender_input = st.selectbox("Patient Gender", ["Male", "Female", "NA"])
+    gender_input = st.selectbox("Patient Gender", ["Male", "Female", "Non-Binary"])
     transport_method = st.selectbox("Transport Method", ["Ambulance", "Heliambulance", "Self Car"])
     trauma_type = st.selectbox("Trauma Type",['Blunt', 'Burn', 'Penetrating', 
                                         'Storm Related','neglect or abuse', 'terrorism'])
@@ -69,7 +69,7 @@ with top_col1:
 with top_col2:
     # Convert categorical inputs to numeric codes (simulate model input)
     race_mapping = {race: idx for idx, race in enumerate(["White", "Black", "Hispanic", "Asian", "Other"])}
-    gender_mapping = {"Male": 1, "Female": 2, "NA": 3}
+    gender_mapping = {"Male": 1, "Female": 2, "Non-Binary": 3}
     transport_mapping = {"Ambulance": 0, "Heliambulance": 1, "Self Car": 2}
     trauma_mapping = {injury: index for index, injury in enumerate(['Blunt', 'Burn', 'Penetrating', 
                                         'Storm Related','neglect or abuse', 'terrorism'])}
