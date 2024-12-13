@@ -45,7 +45,7 @@ bottom_col1, bottom_col2 = st.columns([1, 1])
 with top_col1:
     st.markdown("## 💀 Patient Details")
     # Core Demographics
-    age_input = st.slider("Patient Age", 0, 150, 50)
+    age_input = st.slider("Patient Age", 0, 120, 50)
     race_input = st.selectbox("Patient Race", options=["White", "Black", "Hispanic", "Asian", "Other"])
     gender_input = st.selectbox("Patient Gender", ["Male", "Female", "NA"])
     transport_method = st.selectbox("Transport Method", ["Ambulance", "Heliambulance", "Self Car"])
