@@ -197,6 +197,6 @@ with bottom_col2:
 # Footer and Disclaimers
 st.markdown("---")
 st.write(
-    "Built by Stony Brook folks | [GitHub Repository](https://github.com/your-repo)\n\n"
+    "Built by Stony Brook folks (Mittal, Shivkar, Matt) | [GitHub Repository](https://github.com/your-repo)\n\n"
     "_Note: This tool is for demonstration and educational purposes, pushing the boundaries of AI-driven medical reasoning. Always consult real-world medical professionals._"
 )
